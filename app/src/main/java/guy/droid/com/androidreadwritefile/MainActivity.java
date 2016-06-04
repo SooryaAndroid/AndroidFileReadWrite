@@ -20,11 +20,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 Button button,read;
     EditText editText;
     TextView textView;
+    ArrayList<String> names;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,12 +37,14 @@ Button button,read;
         read = (Button)findViewById(R.id.read);
         editText = (EditText)findViewById(R.id.writetofile);
         textView = (TextView)findViewById(R.id.content);
+        names = new ArrayList<>();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               //  writeToFile(""+editText.getText());
                 try {
-                    writes(""+editText.getText());
+                    // writes(""+editText.getText());
+                    writesobjs(""+editText.getText());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -50,7 +56,8 @@ Button button,read;
             public void onClick(View v) {
                // Log.d("--->",readFromFile());
                 try {
-                    reads();
+                   // reads();
+                    readsobjs();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -144,6 +151,68 @@ Button button,read;
             Toast.makeText(getBaseContext(),
                     ""+aBuffer,
                     Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getBaseContext(), e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    public  void writesobjs(String data) throws IOException
+    {
+        names.add(data);
+        File file = new File(Environment.getExternalStorageDirectory(),"/AppTested/");
+        if(file.exists())
+        {
+
+        }
+        else
+        {
+            file.mkdir();
+        }
+        File outputFile = new File(file, "objects.obj");
+        FileOutputStream os =  new FileOutputStream(outputFile); // remove true to disable append mode
+        os.write(names.toString().getBytes());
+       // os.write(data.getBytes());
+        os.close();
+
+    }
+    public void readsobjs() throws IOException
+    {
+        File file = new File(Environment.getExternalStorageDirectory(),"/AppTested/");
+        if(file.exists())
+        {
+
+        }
+        else
+        {
+            file.mkdir();
+        }
+        File outputFile = new File(file, "objects.obj");
+        try {
+
+            FileInputStream fIn = new FileInputStream(outputFile);
+            BufferedReader myReader = new BufferedReader(
+                    new InputStreamReader(fIn));
+            String aDataRow = "";
+            String aBuffer = "";
+            while ((aDataRow = myReader.readLine()) != null) {
+                aBuffer += aDataRow + "\n";
+            }
+            //txtData.setText(aBuffer);
+            myReader.close();
+            textView.setText(aBuffer);
+            String s1=aBuffer;
+            String replace = s1.replace("[","");
+           // System.out.println(replace);
+            String replace1 = replace.replace("]","");
+           // System.out.println(replace1);
+            ArrayList<String> myList = new ArrayList<String>(Arrays.asList(replace1.split(",")));
+            //System.out.println(myList.toString());
+            for (int i = 0;i<myList.size();i++)
+            {
+                Log.d("POSITION  "+i+" ",myList.get(i));
+            }
+
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), e.getMessage(),
                     Toast.LENGTH_SHORT).show();
